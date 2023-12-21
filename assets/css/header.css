@@ -519,6 +519,20 @@ border-color: red green blue yellow */
 
 .header__search-input-wrap_input {
   height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.fa-xmark.close-icon {
+  display: none;
+  font-size: 1.3rem;
+ padding: 0 15px;
+}
+
+.fa-xmark.close-icon:hover {
+  cursor: pointer;
+  opacity: 0.8;
+  color: var(--primary-color);
 }
 
 .header__search-select:hover .header__search-select-option {
@@ -632,9 +646,9 @@ border-color: red green blue yellow */
   color: var(--white-color);
 }
 
-.header__search-input:focus+.header__search-history {
+/* .header__search-input:focus+.header__search-history {
   display: block;
-}
+} */
 
 .header__search-history {
   position: absolute;

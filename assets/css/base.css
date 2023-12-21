@@ -60,7 +60,7 @@ html {
 
 .result {
     margin: 35px;
-    font-size: 2rem;
+    font-size: 1.6rem;
     padding: 0px 8px;
     color: var(--primary-color);
 }

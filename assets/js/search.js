@@ -1,19 +1,69 @@
-$(document).ready(function () {
+$(document).ready(function (e) {
 
   $(document).on('click', '#btn-search', function (event) {
     event.stopPropagation();
     var keyWord = $('#search').val();
     searchProductList(keyWord);
+    $('.header__search-history').hide();
   });
 
-  $('input[type="search"]').on('keypress', function (e) {
+  $('input[type="text"]').on('keypress', function (e) {
     e.stopPropagation();
     if (e.which == 13) {
       var keyWord = $('#search').val();
       searchProductList(keyWord);
+      $('.header__search-history').hide();
     }
   });
+
+  var isOnClick = false;
+
+  $(document).on('click', '.header__search-input-wrap', function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if(isOnClick){
+      $('.header__search-history').hide();
+    }else {
+      $('.header__search-history').show();
+    }
+
+    isOnClick = !isOnClick;
+
+  });
+
+  // Handle the click event on each search history item
+  $(document).on('click', '.header__search-history-item a', function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    var searchText = $(this).text();
+    $('#search').val(searchText);
+
+    $('.header__search-history').hide();
+    $('.close-icon').show();
+  });
+
+  // Bắt sự kiện input để kiểm tra giá trị và hiển thị/close class
+  $('#search').on('input', function() {
+    var inputValue = $(this).val();
+
+    if (inputValue !== '') {
+      $('.close-icon').show();
+    } else {
+      $('.close-icon').hide();
+    }
+  });
+
+  $('.close-icon').on('click', function() {
+    $('#search').val('');
+    $(this).hide();
+  });
+/// End handle click and close value\
+
+
 });
+
 
 function searchProductList(keyWord) {
   $.ajax({
@@ -47,51 +97,36 @@ function searchProductList(keyWord) {
 
 
 
-function filterCategories(keyWord) {
+function filterCategories() {
   $.ajax({
     url: 'https://raw.githubusercontent.com/TranHung-98/UpData_Product_EveryOne/main/data_product.json',
     method: 'GET',
     dataType: 'json',
-    success: function (list) {
+    success: function (products) {
 
       var categories = {
-        'Electronic_devices': [],
         'Network_devices': [],
         'Companies_USB': [],
         'Companies_Camera': [],
         'Companies_Laptop': [],
-        'Equipment_Cap': [],
-        'Equipped_Power': [],
-        'Equipped_PC': [],
-        'CellPhone': [],
-        'Display_PC': [],
-        'Mỹ phẩm Cao Cấp': [],
-        'Mỹ Phẩm Trung Cấp': [],
-        'Hãng Mỹ Phẩm': [],
-        'Dụng Cụ Trang điểm': [],
-        'Thiết bị âm thanh': []
         // Add more categories as needed
       };
 
       // Categorize products
-      products.forEach(product => {
+       var category = products.forEach(product => {
         // You can customize this condition based on your product data
         if (product.name.includes('USB')) {
           categories['Companies_USB'].push(product);
         } else if (product.name.includes('Camera')) {
           categories['Companies_Camera'].push(product);
-        }else if (product.name.includes('Camera')) {
-          categories['Companies_Camera'].push(product);
+        }else if (product.name.includes('Laptop')) {
+          categories['Companies_Laptop'].push(product);
         }
         // Add more conditions for other categories
       });
 
-      // Example: Display products in the 'Các hãng USB' category
-      console.log(categories['Các hãng USB']);
-
-
       // Render the filtered list
-      renderItem(filteredList);
+      renderItem();
 
       // Perform other actions like updating pagination or handling responsiveness
       responsive();

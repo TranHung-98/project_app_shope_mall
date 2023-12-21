@@ -1,4 +1,5 @@
-$(document).ready(function () {
+$(document).ready(function (e) {
+
   var modal = $('#modal');
   var click_login = $('#click_login_user');
   var click_reg = $('#click_register_user');
