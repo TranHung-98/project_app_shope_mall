@@ -58,6 +58,13 @@ html {
     width: 20%;
 }
 
+.result {
+    margin: 35px;
+    font-size: 2rem;
+    padding: 0px 8px;
+    color: var(--primary-color);
+}
+
 /* animation */
 
 @keyframes fadeIn {
@@ -81,8 +88,7 @@ html {
     }
 }
 
-/* modal */
-
+/*===== modal =====*/
 .modal {
     display: flex;
     z-index: 9999;

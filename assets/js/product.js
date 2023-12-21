@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function getDataProduct() {
     $.ajax({
-        url: 'https://raw.githubusercontent.com/TranHung-98/product_json/main/data_product.json',
+        url: 'https://raw.githubusercontent.com/TranHung-98/UpData_Product_EveryOne/main/data_product.json',
         method: 'GET',
         dataType: 'json',
         success: function (listProduct) {
@@ -166,7 +166,7 @@ function countCart() {
 
 function shuffer() {
     $.ajax({
-        url: 'https://raw.githubusercontent.com/TranHung-98/product_json/main/data_product.json',
+        url: 'https://raw.githubusercontent.com/TranHung-98/UpData_Product_EveryOne/main/data_product.json',
         method: 'GET',
         dataType: 'json',
         success: function (list) {
@@ -183,7 +183,7 @@ function shuffer() {
 
 function sortDataPriceUp() {
     $.ajax({
-        url: 'https://raw.githubusercontent.com/TranHung-98/product_json/main/data_product.json',
+        url: 'https://raw.githubusercontent.com/TranHung-98/UpData_Product_EveryOne/main/data_product.json',
         method: 'GET',
         dataType: 'json',
         success: function (list) {
@@ -201,7 +201,7 @@ function sortDataPriceUp() {
 
 function sortDataPriceDown() {
     $.ajax({
-        url: 'https://raw.githubusercontent.com/TranHung-98/product_json/main/data_product.json',
+        url: 'https://raw.githubusercontent.com/TranHung-98/UpData_Product_EveryOne/main/data_product.json',
         method: 'GET',
         dataType: 'json',
         success: function (list) {
@@ -219,7 +219,7 @@ function sortDataPriceDown() {
 
 function selling() {
     $.ajax({
-        url: 'https://raw.githubusercontent.com/TranHung-98/product_json/main/data_product.json',
+        url: 'https://raw.githubusercontent.com/TranHung-98/UpData_Product_EveryOne/main/data_product.json',
         method: 'GET',
         dataType: 'json',
         success: function (list) {

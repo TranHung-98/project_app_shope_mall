@@ -156,7 +156,7 @@ $(document).ready(function () {
     if (phone.trim() !== "" && password.trim() !== "") {
       $.ajax({
         method: 'GET',
-        url: 'https://raw.githubusercontent.com/TranHung-98/product_json/main/user.json',
+        url: 'https://raw.githubusercontent.com/TranHung-98/UpData_Product_EveryOne/main/user.json',
         dataType: 'json',
         success: function (response) {
           var userFound = false;
