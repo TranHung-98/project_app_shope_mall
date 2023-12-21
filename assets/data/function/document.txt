@@ -1,0 +1,156 @@
+
+//  <-------  Start  Hàm vẫn có chút bug chuyển footer pagination ----> //
+
+// function checkPageArrow() {
+//     var paginationLink = document.querySelectorAll('.pagination-item-link');
+//     var activePage = document.querySelector('.pagination-item--active a');
+
+//     // Check if active page is 1
+//     if (activePage.textContent == 1) {
+//         paginationLink[0].classList.add('pagination-item-link--disable');
+//         if (paginationLink[0].attributes.href) {
+//             paginationLink[0].attributes.removeNamedItem('href');
+//         }
+//     } else {
+//         paginationLink[0].classList.remove('pagination-item-link--disable');
+//         if (!paginationLink[0].attributes.href) {
+//             paginationLink[0].href = '#';
+//         }
+//     }
+
+//     if (activePage.textContent == 14) {
+//         paginationLink[paginationLink.length - 1].classList.add('pagination-item-link--disable');
+//         if (paginationLink[paginationLink.length - 1].attributes.href) {
+//             paginationLink[paginationLink.length - 1].attributes.removeNamedItem('href');
+//         }
+//     } else {
+//         paginationLink[paginationLink.length - 1].classList.remove('pagination-item-link--disable');
+//         if (!paginationLink[paginationLink.length - 1].attributes.href) {
+//             paginationLink[paginationLink.length - 1].href = '#';
+//         }
+//     }
+// }
+
+
+// function handlePagination() {
+//     var paginationItem = document.querySelectorAll('.pagination-item');
+//     var paginationLength = paginationItem.length;
+//     checkPageArrow();
+
+//     for (var i = 0; i < paginationLength; i++) {
+//         if (i != 0 && i != paginationLength - 1) {
+//             // handle active button
+//             var isActive = document.querySelector('.pagination-item--active a');
+//             if (isActive.attributes.href) {
+//                 isActive.attributes.removeNamedItem('href');
+//             } else {
+//                 var paginationItemLink = document.querySelectorAll('.pagination-item-link');
+//                 paginationItemLink[i].setAttribute('href', '#');
+//             }
+//             // handle other button
+//             paginationItem[i].onclick = function () {
+//                 var content = this.querySelector('a').textContent;
+//                 var paginationItemLink = document.querySelectorAll('.pagination-item-link');
+//                 if (content >= 2) {
+//                     for (var j = 1; j <= 3; j++) {
+//                         paginationItemLink[j].textContent = Number(paginationItemLink[j].textContent) - 1;
+//                     }
+//                     document.querySelector('.pagination-item--active').classList.remove('pagination-item--active');
+//                     paginationItem[2].classList.add('pagination-item--active');
+//                     shuffer();
+//                 }
+//                 if (content < 2) {
+//                     document.querySelector('.pagination-item--active').classList.remove('pagination-item--active');
+//                     this.classList.add('pagination-item--active');
+//                 }
+//                 checkPageArrow();
+//             }
+//         } else if (i == 0 || i == paginationLength - 1) {
+//             var paginationItemLink = document.querySelectorAll('.pagination-item-link');
+//             // arrow left
+//             paginationItem[0].onclick = function () {
+//                 if (document.querySelector('.pagination-item--active a').textContent == 14) {
+//                     document.querySelector('.pagination-item--active').classList.remove('pagination-item--active');
+//                     paginationItem[paginationLength - 3].classList.add('pagination-item--active');
+//                 } else if (document.querySelector('.pagination-item--active a').textContent == 2) {
+//                     document.querySelector('.pagination-item--active').classList.remove('pagination-item--active');
+//                     paginationItem[1].classList.add('pagination-item--active');
+//                 } else if (document.querySelector('.pagination-item--active a').textContent > 1) {
+//                     for (var j = 1; j <= 3; j++) {
+//                         paginationItemLink[j].textContent = Number(paginationItemLink[j].textContent) - 1;
+//                     }
+//                     shuffer();
+//                 }
+//                 checkPageArrow();
+//             }
+//             // arrow right
+//             paginationItem[paginationLength - 1].onclick = function () {
+//                 if (document.querySelector('.pagination-item--active a').textContent == 13) {
+//                     document.querySelector('.pagination-item--active').classList.remove('pagination-item--active');
+//                     paginationItem[paginationLength - 2].classList.add('pagination-item--active');
+//                 } else if (document.querySelector('.pagination-item--active a').textContent == 1) {
+//                     document.querySelector('.pagination-item--active').classList.remove('pagination-item--active');
+//                     paginationItem[2].classList.add('pagination-item--active');
+//                 } else if (document.querySelector('.pagination-item--active a').textContent < 13) {
+//                     for (var j = 1; j <= 3; j++) {
+//                         paginationItemLink[j].textContent = Number(paginationItemLink[j].textContent) + 1;
+//                     }
+//                     shuffer();
+//                 }
+//                 checkPageArrow();
+//             }
+//         }
+//     }
+// }
+
+//  <-------  End  Hàm vẫn có chút bug chuyển footer pagination ----> //
+
+
+
+
+//  <-------   Hàm sửa nhưng lỗi chuyển footer pagination   ----> //
+
+// function updateActivePage(newActiveIndex) {
+//     var paginationItem = document.querySelectorAll('.pagination-item');
+//     var paginationItemLink = document.querySelectorAll('.pagination-item-link');
+
+//     for (var j = 1; j <= 3; j++) {
+//         paginationItemLink[j].textContent = Number(paginationItemLink[j].textContent) + newActiveIndex;
+//     }
+
+//     document.querySelector('.pagination-item--active').classList.remove('pagination-item--active');
+//     paginationItem[newActiveIndex].classList.add('pagination-item--active');
+
+// }
+
+// function handlePagination() {
+//     var paginationItem = document.querySelectorAll('.pagination-item');
+//     var paginationLength = paginationItem.length;
+
+//     for (var i = 0; i < paginationLength; i++) {
+//         if (i != 0 && i != paginationLength - 1) {
+//             paginationItem[i].onclick = function () {
+//                 var content = this.querySelector('a').textContent;
+//                 if (content >= 2) {
+//                     updateActivePage(2);
+//                     shuffer();
+//                 } else if (content < 2) {
+//                     updateActivePage(this.dataset.index);
+//                 }
+//             };
+//         } else if (i == 0 || i == paginationLength - 1) {
+//             paginationItem[i].onclick = function () {
+//                 var activePage = parseInt(document.querySelector('.pagination-item--active a').textContent);
+//                 if (this.dataset.arrow === 'left' && activePage > 1) {
+//                     updateActivePage(1);
+//                 } else if (this.dataset.arrow === 'right' && activePage < 13) {
+//                     updateActivePage(3);
+//                 }
+//             };
+//         }
+//     }
+// }
+
+//  <-------   Hàm sửa nhưng lỗi chuyển footer pagination   ----> //
+
+
