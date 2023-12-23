@@ -1,22 +1,24 @@
 $(document).ready(function () {
 
+  // Sự kiện click cho nút "Xoá" trong giỏ hàng
+$(".header__cart-list-item").on("click", ".header__cart-item-close", function (e) {
+  e.stopPropagation();
 
+  // Get the index of the item to be removed
+  var indexToRemove = $(this).closest("li").index();
 
-  /// Xly giỏ hàng
+  // Remove the item from the shoppingCart array
+  shoppingCart.splice(indexToRemove, 1);
 
-  // // Sự kiện click cho nút "Xoá" trong giỏ hàng
-  $(".header__cart-list-item").on("click", ".header__cart-item-close", function (e) {
-    e.stopPropagation();
+  // Remove the corresponding HTML element from the cart list
+  $(this).closest("li").remove();
 
-    // Xoá sản phẩm khỏi giỏ hàng
-    $(this).closest("li").remove();
+  // Check and update the cart status
+  checkCartStatus();
 
-    // Check and update the cart status
-    checkCartStatus();
-
-    // Count the number of items in the cart
-    countCart();
-  });
+  // Count the number of items in the cart
+  countCart();
+});
 
 
 

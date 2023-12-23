@@ -1,9 +1,9 @@
 // 1. Lấy Dữ Liệu và Add Cart:
-var cartItems = [];
+var cartProductList = [];
 
-document.addEventListener('DOMContentLoaded', function () {
-    getDataProduct();
-});
+// Gọi function show  display:
+getDataProduct();
+
 
 function getDataProduct() {
     $.ajax({
@@ -11,86 +11,154 @@ function getDataProduct() {
         method: 'GET',
         dataType: 'json',
         success: function (listProduct) {
-            renderItem(listProduct);
+
+            cartProductList = listProduct;
+            // Set up event listeners for filter buttons
+            setupFilterButtons();
+            // Render initial data
+            renderItem(cartProductList);
             responsive();
-            // handlePagination();
         }
-    })
+    });
+}
 
-    function renderItem(products) {
-        var listProductElement = document.getElementById('list-product');
-        var htmls = products.map(function (product, index) {
-            return `
-            <div data="${index} " class="col l-2-4 m-3 c-6 home-product-item">
-            <a class="home-product-item-link" href="#">
-                <div class="home-product-item__img" style="background-image: url(./assets/img/home/${product.id}.PNG);">
-                <span class="home-product-item__img-text-none" id="text_img">${product.id}</span>
-                </div>
-                <div class="home-product-item__info">
-                    <h4 class="home-product-item__name">${product.name}</h4>
-                    <div class="home-product-item__price">
-                        <p class="home-product-item__price-old">${product.oldPrice}đ</p>
-                        <p class="home-product-item__price-new">${product.newPrice}đ</p>
-                        <i class="home-product-item__ship fas fa-shipping-fast"></i>
-                    </div>
-                    <div class="home-product-item__footer">
-                        <div class="home-product-item__save">
-                            <input type="checkbox" id="heart-save-${product.id}">
-                            <label for="heart-save-${product.id}" class="far fa-heart"></label>
-                        </div>
-                        <div class="home-product-item__rating-star">
-                            <i class="star-checked far fa-star"></i>
-                            <i class="star-checked far fa-star"></i>
-                            <i class="star-checked far fa-star"></i>
-                            <i class="star-checked far fa-star"></i>
-                            <i class="star-uncheck far fa-star"></i>
-                        </div>
-                        <div class="home-product-item__saled">Đã bán ${product.saled}</div>
-                    </div>
-                    <div class="home-product-item__origin">${product.origin}</div>
-                    <div class="home-product-item__favourite">
-                        Yêu thích
-                    </div>
-                    <div class="home-product-item__sale-off">
-                        <div class="home-product-item__sale-off-value">${product.saleOff}%</div>
-                        <div class="home-product-item__sale-off-label">GIẢM</div>
-                    </div>
-                </div>
-                <button class="home-product-item-footer"  id="add-to-cart-${product.id}">Thêm vào giỏ hàng</button>
-            </a>
-        </div>`;
-        })
-        listProductElement.innerHTML = htmls.join('');
+// Hàm xáo trộn dữ liệu
+function shuffle() {
+    const shuffledList = cartProductList.slice(0, 25).sort(() => Math.random() - 0.5);
+    renderItem(shuffledList);
+}
 
-        // Adding click event listeners to "Add to Cart" buttons
-        products.forEach(function (product) {
-            var addToCartButton = document.getElementById(`add-to-cart-${product.id}`);
-            addToCartButton.addEventListener('click', function () {
-                addToCart(product);
-            });
-        });
+// Hàm xắp xếp dữ liệu theo giá tiền up and down
+function sortDataPriceUp() {
+    const sortedList = cartProductList.slice(0, 25).sort((a, b) => parseFloat(a.newPrice) - parseFloat(b.newPrice));
+    renderItem(sortedList);
+}
 
+function sortDataPriceDown() {
+    const sortedList = cartProductList.slice(0, 25).sort((a, b) => parseFloat(b.newPrice) - parseFloat(a.newPrice));
+    renderItem(sortedList);
+}
+//End hàm xắp xếp theo giá up and down
+
+// Hàm xắp xếp theo bán chạy
+function sortBySelling() {
+    const sortedList = cartProductList.slice(0, 25).sort((a, b) => parseFloat(b.saled) - parseFloat(a.saled));
+    renderItem(sortedList);
+}
+
+// Hàm xắp cếp theo ngày mới nhất và  new
+function sortByDate() {
+    const sortedList = cartProductList.slice(0, 25).sort((a, b) => {
+        // Assuming 'date' is a string in the format 'DD-MM-YYYY'
+        const [dayA, monthA, yearA] = a.date.split('-').map(Number);
+        const [dayB, monthB, yearB] = b.date.split('-').map(Number);
+
+        // Convert date components to Date objects for comparison
+        const dateA = new Date(yearA, monthA - 1, dayA); // Month is 0-indexed in Date
+        const dateB = new Date(yearB, monthB - 1, dayB);
+
+        // Compare the dates in descending order
+        return dateB - dateA;
+    });
+
+    renderItem(sortedList);
+}
+
+//Hàm search
+function searchProductList(keyWord) {
+    const filteredList = cartProductList.filter(product => {
+        return product.name.toLowerCase().includes(keyWord.toLowerCase());
+    });
+    if (filteredList.length === 0) {
+        $('#list-product').addClass("result").text(`Không tìm thấy sản phẩm "${keyWord}" bạn tìm kiếm!`);
+    } else {
+        $('#list-product').removeClass("result").text("");
+        renderItem(filteredList);
     }
+    responsive();
 }
 
 
-function addToCart(product) {
+// 3. Hiển Thị Sản Phẩm:main product
+function renderItem(productList) {
+    var listProduct = document.getElementById('list-product');
 
-    // cartItems.push(product);
-    var existingItem = cartItems.find(item => item.id === product.id);
+    if (!Array.isArray(productList)) {
+        console.error('Error: Data is not in the expected format.');
+        return;
+    }
+    var htmls = productList.slice(0, 25).map(function (product, index) {
+        return `
+        <div data="${index} " class="col l-2-4 m-3 c-6 home-product-item">
+        <a class="home-product-item-link" href="#">
+            <div class="home-product-item__img" style="background-image: url(./assets/img/home/${product.id}.PNG);">
+            <span class="home-product-item__img-text-none" id="text_img">${product.id}</span>
+            </div>
+            <div class="home-product-item__info">
+                <h4 class="home-product-item__name">${product.name}</h4>
+                <div class="home-product-item__price">
+                    <p class="home-product-item__price-old">${product.oldPrice}đ</p>
+                    <p class="home-product-item__price-new">${product.newPrice}đ</p>
+                    <i class="home-product-item__ship fas fa-shipping-fast"></i>
+                </div>
+                <div class="home-product-item__footer">
+                    <div class="home-product-item__save">
+                        <input type="checkbox" id="heart-save-${product.id}">
+                        <label for="heart-save-${product.id}" class="far fa-heart"></label>
+                    </div>
+                    <div class="home-product-item__rating-star">
+                        <i class="star-checked far fa-star"></i>
+                        <i class="star-checked far fa-star"></i>
+                        <i class="star-checked far fa-star"></i>
+                        <i class="star-checked far fa-star"></i>
+                        <i class="star-uncheck far fa-star"></i>
+                    </div>
+                    <div class="home-product-item__saled">Đã bán ${product.saled}</div>
+                </div>
+                <div class="home-product-item__origin">${product.origin}</div>
+                <div class="home-product-item__favourite">
+                    Yêu thích
+                </div>
+                <div class="home-product-item__sale-off">
+                    <div class="home-product-item__sale-off-value">${product.saleOff}%</div>
+                    <div class="home-product-item__sale-off-label">GIẢM</div>
+                </div>
+            </div>
+            <button class="home-product-item-footer" id="add-to-cart-${product.id}" >Thêm vào giỏ hàng</button>
+        </a>
+    </div>`;
+    })
+
+    listProduct.innerHTML = htmls.join('');
+
+    productList.forEach(function (product) {
+        var addToCartButton = document.getElementById(`add-to-cart-${product.id}`);
+        $(addToCartButton).on('click', function () {
+            addToCart(product);
+        });
+    });
+}
+
+var shoppingCart = [];
+
+function addToCart(product) {
+    console.log("list product ", product);
+
+    var existingItem = shoppingCart.find(function (item) {
+        return item.id === product.id;
+    });
 
     if (existingItem) {
         existingItem.quantity++;
     } else {
-        if (product && product.id) {
-            cartItems.push({
-                id: product.id,
-                name: product.name,
-                price: product.newPrice,
-                quantity: 1
-            });
-        }
+        shoppingCart.push({
+            id: product.id,
+            name: product.name,
+            price: product.newPrice,
+            quantity: 1
+        });
     }
+
     updateCartUI();
     countCart();
     checkCartStatus();
@@ -99,16 +167,14 @@ function addToCart(product) {
 function updateCartUI() {
     var cartListElement = document.getElementById('cart-list');
 
-    if (cartListElement) {
-
-        var htmls = cartItems.map(function (item) {
-            return `
+    var htmls = shoppingCart.map(function (item) {
+        return `
                 <li class="header__cart-item">
                     <img src="./assets/img/buy/${item.id}.PNG" class="header__cart-item-img">
                     <div class="header__cart-item-info">
                         <div class="header__cart-item-heading">
                             <h3 class="header__cart-item-name">${item.name}</h3>
-                            <p class="header__cart-item-price">${formatCurrency(item.price * item.quantity)}.000đ</p>
+                            <p class="header__cart-item-price">${formatCurrency((item.price * item.quantity))}K</p>
                         </div>
                         <div class="header__cart-item-body">
                             <p class="header__cart-item-number">x ${item.quantity}</p>
@@ -119,21 +185,18 @@ function updateCartUI() {
                         </div>
                     </div>
                 </li>`;
-        });
+    });
 
-        $(cartListElement).empty().append(htmls.join(''));
-    }
+    cartListElement.innerHTML = htmls.join('');
+
 }
 
 
-function removeFromCart(productId) {
-    cartItems = cartItems.filter(item => item.id !== productId);
-    updateCartUI();
-}
-
+//// formater
 function formatCurrency(value) {
     return value.toLocaleString('vi-VN');
 }
+
 
 // Xly khi không có sản phẩm thì hiển thị giỏ hàng rỗng:
 function checkCartStatus() {
@@ -161,130 +224,6 @@ function countCart() {
         // Cập nhật số lượng mục trong giỏ hàng lên giao diện người dụng
         numberCart.innerHTML = count.toString();
     }
-}
-
-
-function shuffer() {
-    $.ajax({
-        url: 'https://raw.githubusercontent.com/TranHung-98/UpData_Product_EveryOne/main/data_product.json',
-        method: 'GET',
-        dataType: 'json',
-        success: function (list) {
-            list = list.sort(() => Math.random() - 0.5);
-            renderItem(list);
-            responsive();
-            // handlePagination();
-        },
-        error: function (error) {
-            console.error('Error fetching data:', error);
-        }
-    });
-}
-
-function sortDataPriceUp() {
-    $.ajax({
-        url: 'https://raw.githubusercontent.com/TranHung-98/UpData_Product_EveryOne/main/data_product.json',
-        method: 'GET',
-        dataType: 'json',
-        success: function (list) {
-            list = list.sort((a, b) => parseFloat(a.newPrice) - parseFloat(b.newPrice));
-            renderItem(list);
-            responsive();
-            // handlePagination();
-        },
-        error: function (error) {
-            console.error('Error fetching data:', error);
-        }
-    });
-}
-
-
-function sortDataPriceDown() {
-    $.ajax({
-        url: 'https://raw.githubusercontent.com/TranHung-98/UpData_Product_EveryOne/main/data_product.json',
-        method: 'GET',
-        dataType: 'json',
-        success: function (list) {
-            list = list.sort((a, b) => parseFloat(b.newPrice) - parseFloat(a.newPrice));
-            renderItem(list);
-            responsive();
-            // handlePagination();
-        },
-        error: function (error) {
-            console.error('Error fetching data:', error);
-        }
-    });
-}
-
-
-function selling() {
-    $.ajax({
-        url: 'https://raw.githubusercontent.com/TranHung-98/UpData_Product_EveryOne/main/data_product.json',
-        method: 'GET',
-        dataType: 'json',
-        success: function (list) {
-            list = list.sort((a, b) => parseFloat(b.saled) - parseFloat(a.saled));
-            renderItem(list);
-            responsive();
-            // handlePagination();
-        },
-        error: function (error) {
-            console.error('Error fetching data:', error);
-        }
-    });
-}
-
-
-// 3. Hiển Thị Sản Phẩm:main product
-function renderItem(productsLists, items_per_page) {
-    var listProduct = document.getElementById('list-product');
-
-    if (!Array.isArray(productsLists)) {
-        console.error('Error: Data is not in the expected format.');
-        return;
-    }
-    var htmls = productsLists.slice(0, items_per_page).map(function (productsList, index) {
-        return `
-        <div data="${index} " class="col l-2-4 m-3 c-6 home-product-item">
-        <a class="home-product-item-link" href="#">
-            <div class="home-product-item__img" style="background-image: url(./assets/img/home/${productsList.id}.PNG);">
-            <span class="home-product-item__img-text-none" id="text_img">${productsList.id}</span>
-            </div>
-            <div class="home-product-item__info">
-                <h4 class="home-product-item__name">${productsList.name}</h4>
-                <div class="home-product-item__price">
-                    <p class="home-product-item__price-old">${productsList.oldPrice}đ</p>
-                    <p class="home-product-item__price-new">${productsList.newPrice}đ</p>
-                    <i class="home-product-item__ship fas fa-shipping-fast"></i>
-                </div>
-                <div class="home-product-item__footer">
-                    <div class="home-product-item__save">
-                        <input type="checkbox" id="heart-save-${productsList.id}">
-                        <label for="heart-save-${productsList.id}" class="far fa-heart"></label>
-                    </div>
-                    <div class="home-product-item__rating-star">
-                        <i class="star-checked far fa-star"></i>
-                        <i class="star-checked far fa-star"></i>
-                        <i class="star-checked far fa-star"></i>
-                        <i class="star-checked far fa-star"></i>
-                        <i class="star-uncheck far fa-star"></i>
-                    </div>
-                    <div class="home-product-item__saled">Đã bán ${productsList.saled}</div>
-                </div>
-                <div class="home-product-item__origin">${productsList.origin}</div>
-                <div class="home-product-item__favourite">
-                    Yêu thích
-                </div>
-                <div class="home-product-item__sale-off">
-                    <div class="home-product-item__sale-off-value">${productsList.saleOff}%</div>
-                    <div class="home-product-item__sale-off-label">GIẢM</div>
-                </div>
-            </div>
-            <button class="home-product-item-footer" id="add-to-cart${productsList.id}" >Thêm vào giỏ hàng</button>
-        </a>
-    </div>`;
-    })
-    listProduct.innerHTML = htmls.join('');
 }
 
 
