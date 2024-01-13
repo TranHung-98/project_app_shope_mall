@@ -1,24 +1,24 @@
 $(document).ready(function () {
 
   // Sự kiện click cho nút "Xoá" trong giỏ hàng
-$(".header__cart-list-item").on("click", ".header__cart-item-close", function (e) {
-  e.stopPropagation();
+    $(".header__cart-list-item").on("click", ".header__cart-item-close", function (e) {
+    e.stopPropagation();
 
-  // Get the index of the item to be removed
-  var indexToRemove = $(this).closest("li").index();
+    // Get the index of the item to be removed
+    var indexToRemove = $(this).closest("li").index();
 
-  // Remove the item from the shoppingCart array
-  shoppingCart.splice(indexToRemove, 1);
+    // Remove the item from the shoppingCart array
+    shoppingCart.splice(indexToRemove, 1);
 
-  // Remove the corresponding HTML element from the cart list
-  $(this).closest("li").remove();
+    // Remove the corresponding HTML element from the cart list
+    $(this).closest("li").remove();
 
-  // Check and update the cart status
-  checkCartStatus();
+    // Check and update the cart status
+    checkCartStatus();
 
-  // Count the number of items in the cart
-  countCart();
-});
+    // Count the number of items in the cart
+    countCart();
+    });
 
 
 
@@ -50,4 +50,90 @@ $(".header__cart-list-item").on("click", ".header__cart-item-close", function (e
 },);
 
 
+var shoppingCart = [];
+
+function addToCart(product) {
+    console.log("list product ", product);
+
+    var existingItem = shoppingCart.find(function (item) {
+        return item.id === product.id;
+    });
+
+    if (existingItem) {
+        existingItem.quantity++;
+    } else {
+        shoppingCart.push({
+            id: product.id,
+            name: product.name,
+            price: product.newPrice,
+            quantity: 1
+        });
+    }
+
+    updateCartUI();
+    countCart();
+    checkCartStatus();
+}
+
+function updateCartUI() {
+    var cartListElement = document.getElementById('cart-list');
+
+    var htmls = shoppingCart.map(function (item) {
+        return `
+                <li class="header__cart-item">
+                    <img src="./assets/img/buy/${item.id}.PNG" class="header__cart-item-img">
+                    <div class="header__cart-item-info">
+                        <div class="header__cart-item-heading">
+                            <h3 class="header__cart-item-name">${item.name}</h3>
+                            <p class="header__cart-item-price">${formatCurrency((item.price * item.quantity))}K</p>
+                        </div>
+                        <div class="header__cart-item-body">
+                            <p class="header__cart-item-number">x ${item.quantity}</p>
+                            <div class="header__cart-item-close">
+                                Xoá
+                                <i class="fas fa-times"></i>
+                            </div>
+                        </div>
+                    </div>
+                </li>`;
+    });
+
+    cartListElement.innerHTML = htmls.join('');
+
+}
+
+
+//// formater
+function formatCurrency(value) {
+    return value.toLocaleString('vi-VN');
+}
+
+
+// Xly khi không có sản phẩm thì hiển thị giỏ hàng rỗng:
+function checkCartStatus() {
+    var cartItemCount = $(".header__cart-list-item li").length;
+
+    if (cartItemCount > 0) {
+        $(".header__cart").removeClass("header__cart--no-cart").addClass("header__cart--has-cart");
+    } else {
+        $(".header__cart").removeClass("header__cart--has-cart").addClass("header__cart--no-cart");
+    }
+}
+
+checkCartStatus();
+
+
+// Hàm Đếm Số lượng có trong giỏ hàng:
+function countCart() {
+
+    var numberCart = document.querySelector('.header__cart-count');
+
+    if (numberCart) {
+        var cartItems = document.querySelectorAll('.header__cart-item');
+        var count = cartItems.length;
+
+        // Cập nhật số lượng mục trong giỏ hàng lên giao diện người dụng
+        numberCart.innerHTML = count.toString();
+    }
+}
 

@@ -111,7 +111,7 @@ $( document ).ready(function() {
           $('#main').toggleClass('right-bar-enabled');
       });
 
-
+      
     },
     //initilizing
     App.prototype.init = function() {

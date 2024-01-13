@@ -3,21 +3,22 @@ $(document).ready(function () {
   showHeader();
   showFooter();
   showModal();
-
+  // showMainContent();
 });
 
 
 
-function showMyProfile() {
+function showMainContent() {
   $.ajax({
-    url: "../Admin_project_shop/pro-profile.html",
+    url: "/viewer/main_content",
     type: "GET",
     success: function (data) {
-
-      $("#my-profile").html(data);
+      $("#main-content").html(data);
     }
   });
 }
+
+
 
 
 function showHeader() {

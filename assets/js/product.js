@@ -65,19 +65,32 @@ function sortByDate() {
 }
 
 //Hàm search
-function searchProductList(keyWord) {
+function searchProductList(keyWord, searchCallback) {
     const filteredList = cartProductList.filter(product => {
-        return product.name.toLowerCase().includes(keyWord.toLowerCase());
+        return searchCallback(product, keyWord);
     });
+
     if (filteredList.length === 0) {
         $('#list-product').addClass("result").text(`Không tìm thấy sản phẩm "${keyWord}" bạn tìm kiếm!`);
     } else {
         $('#list-product').removeClass("result").text("");
         renderItem(filteredList);
     }
+
     responsive();
 }
 
+
+// Hàm callback để kiểm tra điều kiện tìm kiếm
+function searchCallback(product, keyWord) {
+    // Bạn có thể thêm hoặc thay đổi các điều kiện tìm kiếm tại đây
+    return product.name.toLowerCase().includes(keyWord.toLowerCase()) ||
+        product.origin.toLowerCase().includes(keyWord.toLowerCase()) ||
+        product.oldPrice.includes(keyWord) ||
+        product.newPrice.includes(keyWord) ||
+        product.saled.includes(keyWord) ||
+        product.saleOff.includes(keyWord);
+}
 
 // 3. Hiển Thị Sản Phẩm:main product
 function renderItem(productList) {
@@ -138,94 +151,6 @@ function renderItem(productList) {
         });
     });
 }
-
-var shoppingCart = [];
-
-function addToCart(product) {
-    console.log("list product ", product);
-
-    var existingItem = shoppingCart.find(function (item) {
-        return item.id === product.id;
-    });
-
-    if (existingItem) {
-        existingItem.quantity++;
-    } else {
-        shoppingCart.push({
-            id: product.id,
-            name: product.name,
-            price: product.newPrice,
-            quantity: 1
-        });
-    }
-
-    updateCartUI();
-    countCart();
-    checkCartStatus();
-}
-
-function updateCartUI() {
-    var cartListElement = document.getElementById('cart-list');
-
-    var htmls = shoppingCart.map(function (item) {
-        return `
-                <li class="header__cart-item">
-                    <img src="./assets/img/buy/${item.id}.PNG" class="header__cart-item-img">
-                    <div class="header__cart-item-info">
-                        <div class="header__cart-item-heading">
-                            <h3 class="header__cart-item-name">${item.name}</h3>
-                            <p class="header__cart-item-price">${formatCurrency((item.price * item.quantity))}K</p>
-                        </div>
-                        <div class="header__cart-item-body">
-                            <p class="header__cart-item-number">x ${item.quantity}</p>
-                            <div class="header__cart-item-close">
-                                Xoá
-                                <i class="fas fa-times"></i>
-                            </div>
-                        </div>
-                    </div>
-                </li>`;
-    });
-
-    cartListElement.innerHTML = htmls.join('');
-
-}
-
-
-//// formater
-function formatCurrency(value) {
-    return value.toLocaleString('vi-VN');
-}
-
-
-// Xly khi không có sản phẩm thì hiển thị giỏ hàng rỗng:
-function checkCartStatus() {
-    var cartItemCount = $(".header__cart-list-item li").length;
-
-    if (cartItemCount > 0) {
-        $(".header__cart").removeClass("header__cart--no-cart").addClass("header__cart--has-cart");
-    } else {
-        $(".header__cart").removeClass("header__cart--has-cart").addClass("header__cart--no-cart");
-    }
-}
-
-checkCartStatus();
-
-
-// Hàm Đếm Số lượng có trong giỏ hàng:
-function countCart() {
-
-    var numberCart = document.querySelector('.header__cart-count');
-
-    if (numberCart) {
-        var cartItems = document.querySelectorAll('.header__cart-item');
-        var count = cartItems.length;
-
-        // Cập nhật số lượng mục trong giỏ hàng lên giao diện người dụng
-        numberCart.innerHTML = count.toString();
-    }
-}
-
 
 // 4. Điều Chỉnh Giao Diện Theo Kích Thước Màn Hình:
 function responsive() {

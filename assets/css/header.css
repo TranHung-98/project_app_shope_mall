@@ -835,7 +835,8 @@ border-color: red green blue yellow */
   align-items: center;
   justify-content: space-between;
   height: 20px;
-  margin: 0 16px;
+  margin: 0px 16px;
+  margin-left: 0;
 }
 
 .header__cart-item-number {
